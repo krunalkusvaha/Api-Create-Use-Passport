@@ -1,6 +1,6 @@
 # Laravel Api create use a passport 
 
-## Steps
+## Api Create Steps
 
 ## Step 1: Laravel Installation
             - copmoser laravel-project laravel/laravel ("your project name")
@@ -50,3 +50,53 @@
 
 ## Step 9:  Laravel Rest API testing Using Postman
 
+
+## Admin api create step use the middleware
+
+## Step 1:  Create admin middleware
+            - php artisan make:middleware AdminAuthenticated
+            - public function handle(Request $request, Closure $next) {
+                if (Auth::guard('admin')->check()) {
+                    return $next($request);
+                }
+              }
+
+## Step 2:  Opent the app/Http/Kernel.php file and register the middleware  
+            - protected $routeMiddleware = [
+                'adminauth' => \App\Http\Middleware\AdminAuthenticated::class,
+              ];
+
+## Step 3:  Create model below command
+            - php artisan make:model Admin
+
+## Step 4:  Open the config/auth.php file and make the guards
+            - 'guards'=> [
+                    'admin' => [
+                        'driver' => 'passport',
+                        'provider' => 'admins',
+                    ],
+                ],
+            - 'providers' => [
+                    'admins' => [
+                        'driver' => 'eloquent',
+                        'model' => App\Models\Admin::class,
+                    ],
+                ],
+
+## Step 5:  Create admin api controller below command
+            - php artisan make: controller Api/AdminAuthController
+
+## Step 6:  open routes/api.php file and make the route 
+            - Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
+                Route::post('login', [AdminAuthController::class, 'adminLogin']);
+                Route::group(['middleware' => 'adminauth'], function () {
+                    Route::get('logout', [AdminAuthController::class,'adminlogout']);
+                    Route::get('profile', [AdminAuthController::class,'get_admin_profile']);
+                    Route::post('profile-update', [AdminAuthController::class,'profile_update_post']);
+                    Route::post('change-password', [AdminAuthController::class,'change_password_post']);
+                });
+            });
+
+## Step 7:  Make the table below command
+            - php artisan make:migration create_admin_table
+            - migrate the table : php artisan migrate 

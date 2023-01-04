@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\Api\AdminAuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -17,10 +18,21 @@ use App\Http\Controllers\Api\UserController;
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
-
 Route::group(['middleware' => 'auth:api'], function(){
-    Route::post('user-details', [UserController::class, 'userDetails']);
+    Route::get('user-details', [UserController::class, 'get_userDetails']);
     Route::get('logout', [UserController::class,'logout']);
+});
+
+Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {
+    Route::post('login', [AdminAuthController::class, 'adminLogin']);
+    Route::group(['middleware' => 'adminauth'], function () {
+        
+        Route::get('logout', [AdminAuthController::class,'adminlogout']);
+        Route::get('profile', [AdminAuthController::class,'get_admin_profile']);
+        Route::post('profile-update', [AdminAuthController::class,'profile_update_post']);
+        Route::post('change-password', [AdminAuthController::class,'change_password_post']);
+
+    });
 });
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
