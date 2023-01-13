@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminAuthController;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,8 +20,13 @@ use App\Http\Controllers\Api\AdminAuthController;
 Route::post('login', [UserController::class, 'login']);
 Route::post('register', [UserController::class, 'register']);
 
+
+
+
 Route::group(['middleware' => 'auth:api'], function(){
     Route::get('user-details', [UserController::class, 'get_userDetails']);
+    Route::post('user-profile-update', [UserController::class,'user_update_post']);
+    Route::post('change-password', [UserController::class,'change_password_post']);
     Route::get('logout', [UserController::class,'logout']);
 });
 
