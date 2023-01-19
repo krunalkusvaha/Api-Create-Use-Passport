@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\AdminAuthController;
+use App\Http\Controllers\Api\MultipleUploadController;
 
 
 
@@ -28,6 +29,9 @@ Route::group(['middleware' => 'auth:api'], function(){
     Route::post('user-profile-update', [UserController::class,'user_update_post']);
     Route::post('change-password', [UserController::class,'change_password_post']);
     Route::get('logout', [UserController::class,'logout']);
+    
+    Route::post('document-upload', [MultipleUploadController::class, 'upload']);
+
 });
 
 Route::group(['prefix' => 'admin', 'namespace' => 'Admin'], function () {

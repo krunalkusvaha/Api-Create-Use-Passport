@@ -13,6 +13,8 @@ use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Response;
+use Str;
+use File;
 
 class UserController extends Controller
 {
@@ -94,7 +96,7 @@ class UserController extends Controller
     }else{
       return response()->json([
         'success' => false,
-        'message' => 'Oppes! You have entered Invalid Email or Password',
+        'message' => 'Oppes! You have entered Invalid Email or Password.',
       ], 401);
     }
 
@@ -155,6 +157,19 @@ class UserController extends Controller
     // dd($user);
     $user->name = $request->name;
     $user->email = $request->email;
+
+
+    $user_profile = str_replace(' ','-', $request->name);
+    $user_profile = Str::lower($user_profile);
+
+    if($request->hasFile('profile_image')){
+
+      $randomnumber = random_int(1000, 9999);
+      $imageslug = $user_profile;
+      $imagename = $imageslug . '-' . $randomnumber . '.' . $request->profile_image->extension();
+      $request->profile_image->move(public_path('uplode/user-profile/'),$imagename);
+      $user->profile_image = $imagename;
+    }
     $user->save();
     return $this->response(self::RESULT_SUCCESS,"Profile details has been updated successfully.",array($user));	
   }
